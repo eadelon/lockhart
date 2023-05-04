@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include <SDL.h>
+#include <SDL3/SDL.h>
 
 #include <gtc/matrix_transform.hpp>
 
@@ -23,8 +23,8 @@ struct camera {
 	int old_y = 0;
 
 	void update() {
-		int x;
-		int y;
+		float x;
+		float y;
 		auto state = SDL_GetMouseState(&x, &y);
 
 		if (state & SDL_BUTTON_LEFT) {
@@ -52,7 +52,6 @@ struct camera {
 		old_x = x;
 		old_y = y;
 
-		//std::cout << "r: " << r << " t:" << t << " p" << p << std::endl;
 	}
 };
 
@@ -60,8 +59,6 @@ glm::vec3 position(const camera& camera) {
 	float x = camera.r * std::sin(glm::radians(camera.p)) * std::cos(glm::radians(camera.t));
 	float y = camera.r * std::sin(glm::radians(camera.p)) * std::sin(glm::radians(camera.t));
 	float z = camera.r * std::cos(glm::radians(camera.p));
-
-	/*std::cout << x << " " << y << " " << z << "\n";*/
 
 	return glm::vec3(x, z, y);
 }
@@ -98,13 +95,13 @@ int main(int argc, char* argv[]) {
 		std::cout << SDL_GetError();
 		return -1;
 	}
-	
+
 	int ww = 800;
 	int wh = 600;
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	SDL_Window* window = SDL_CreateWindow("Lockhart", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, ww, wh, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+	SDL_Window* window = SDL_CreateWindow("Lockhart", ww, wh, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	if (window == nullptr) {
 		std::cout << SDL_GetError();
 		return -1;
@@ -245,17 +242,15 @@ int main(int argc, char* argv[]) {
 
 	while (is_running) {
 		while (SDL_PollEvent(&event)) {
-			if (event.type == SDL_QUIT) {
+			if (event.type == SDL_EVENT_QUIT) {
 				is_running = false;
 			}
-			else if (event.type == SDL_WINDOWEVENT) {
-				if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
-					ww = event.window.data1;
-					wh = event.window.data2;
-					std::cout << ww << " " << wh << "\n";
-					projection = glm::perspective(glm::radians(45.f), (float)ww / (float)wh, 1.f, 10000.f);
-					glViewport(0, 0, ww, wh);
-				}
+			else if (event.type == SDL_EVENT_WINDOW_RESIZED) {
+				ww = event.window.data1;
+				wh = event.window.data2;
+				std::cout << ww << " " << wh << "\n";
+				projection = glm::perspective(glm::radians(45.f), (float)ww / (float)wh, 1.f, 10000.f);
+				glViewport(0, 0, ww, wh);
 			}
 		}
 

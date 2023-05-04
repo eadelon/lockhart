@@ -30,4 +30,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="Elevation.ddc" />
+    <CopyFileToFolders Include="shader.fs" />
+    <CopyFileToFolders Include="shader.vs" />
+  </ItemGroup>
 </Project>
